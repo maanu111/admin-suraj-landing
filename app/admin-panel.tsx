@@ -5,17 +5,11 @@ import { SECTIONS, defaultContent, type SiteContent } from "@/lib/content";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import FieldInput from "./field-input";
 
-const PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "studio-admin";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-const GATE_KEY = "studio-admin-ok";
 
 type Live = "connecting" | "live" | "off";
 
 export default function AdminPanel() {
-  const [unlocked, setUnlocked] = useState(false);
-  const [attempt, setAttempt] = useState("");
-  const [gateError, setGateError] = useState("");
-
   const [content, setContent] = useState<SiteContent>(defaultContent);
   const [active, setActive] = useState(SECTIONS[0].key);
   const [loading, setLoading] = useState(true);
@@ -35,10 +29,6 @@ export default function AdminPanel() {
   dirtyRef.current = dirty;
   const activeRef = useRef(active);
   activeRef.current = active;
-
-  useEffect(() => {
-    setUnlocked(sessionStorage.getItem(GATE_KEY) === "1");
-  }, []);
 
   const applyRow = useCallback((section: string, incoming: Record<string, unknown>) => {
     setContent((prev) => ({
@@ -74,13 +64,13 @@ export default function AdminPanel() {
   }, []);
 
   useEffect(() => {
-    if (unlocked) void load();
-  }, [unlocked, load]);
+    void load();
+  }, [load]);
 
   // Realtime: pick up edits from another browser or device. A section being
   // edited right now is never overwritten — it is flagged instead.
   useEffect(() => {
-    if (!unlocked || !isSupabaseConfigured) return;
+    if (!isSupabaseConfigured) return;
 
     const channel = supabase
       .channel("site_content_admin")
@@ -102,7 +92,7 @@ export default function AdminPanel() {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [unlocked, applyRow]);
+  }, [applyRow]);
 
   function setField(sectionKey: string, fieldKey: string, value: unknown) {
     setContent((prev) => ({ ...prev, [sectionKey]: { ...prev[sectionKey], [fieldKey]: value } }));
@@ -137,20 +127,25 @@ export default function AdminPanel() {
     if (pending.length) setStatus(`Saved ${pending.length} section${pending.length > 1 ? "s" : ""}.`);
   }
 
-  /** Switching section always lands at the top of the new form. */
+  /**
+   * Switching section always lands at the top of the new form.
+   * Written synchronously and again on the next task — rAF is suspended in
+   * hidden or occluded tabs, so scheduling the reset there can skip it.
+   */
   function selectSection(key: string) {
+    const toTop = () => {
+      if (mainRef.current) mainRef.current.scrollTop = 0;
+      window.scrollTo(0, 0);
+    };
     setActive(key);
     setMenuOpen(false);
     setStatus("");
-    requestAnimationFrame(() => {
-      mainRef.current?.scrollTo({ top: 0, behavior: "auto" });
-      window.scrollTo({ top: 0, behavior: "auto" });
-    });
+    toTop();
+    setTimeout(toTop, 0);
   }
 
   // Cmd/Ctrl+S saves the open section.
   useEffect(() => {
-    if (!unlocked) return;
     const onKey = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
         event.preventDefault();
@@ -160,7 +155,7 @@ export default function AdminPanel() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [unlocked, save]);
+  }, [save]);
 
   // Warn before losing unsaved edits.
   useEffect(() => {
@@ -172,47 +167,6 @@ export default function AdminPanel() {
   }, [dirty]);
 
   /* ---------------------------------------------------------------- */
-
-  if (!unlocked) {
-    return (
-      <div className="a-gate">
-        <form
-          className="a-gate-card"
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (attempt === PASSWORD) {
-              sessionStorage.setItem(GATE_KEY, "1");
-              setUnlocked(true);
-            } else {
-              setGateError("That password is not right.");
-            }
-          }}
-        >
-          <h1>Studio admin</h1>
-          <p>Enter the admin password to edit the landing page.</p>
-          <input
-            className="a-input"
-            type="password"
-            value={attempt}
-            autoFocus
-            placeholder="Password"
-            onChange={(event) => {
-              setAttempt(event.target.value);
-              setGateError("");
-            }}
-          />
-          {gateError ? <p className="a-error">{gateError}</p> : null}
-          <button className="a-btn a-btn-solid" type="submit">
-            Unlock
-          </button>
-          <p className="a-hint">
-            A convenience gate, not real security — it is readable in the page source. Put Supabase Auth in front of
-            this before exposing the admin publicly.
-          </p>
-        </form>
-      </div>
-    );
-  }
 
   const section = SECTIONS.find((item) => item.key === active) ?? SECTIONS[0];
   const dirtyCount = Object.values(dirty).filter(Boolean).length;

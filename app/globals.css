@@ -323,3 +323,31 @@
 @media (prefers-reduced-motion: reduce) {
   .a-side, .a-scrim, .a-live i { transition: none !important; animation: none !important; }
 }
+
+/* Signed-in identity + sign out */
+.a-account {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+.a-account span {
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.a-account button {
+  flex-shrink: 0;
+  border: 0;
+  background: none;
+  color: var(--teal);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  text-decoration: underline;
+}
