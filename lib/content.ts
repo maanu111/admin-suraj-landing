@@ -43,6 +43,12 @@ export const SECTIONS: SectionDef[] = [
     description:
       "Search and social metadata. Feeds the page title, meta description, Open Graph and Twitter cards, sitemap, robots.txt and the JSON-LD business listing.",
     fields: [
+      {
+        key: "siteUrl",
+        label: "Site URL",
+        type: "url",
+        help: "The live domain, e.g. https://studio.com — used for canonical links, the sitemap, social cards and the business listing. Set this before launch.",
+      },
       { key: "siteName", label: "Site name", type: "text", help: "Brand name shown in search results and OG cards" },
       { key: "title", label: "Page title", type: "text", help: "50–60 characters. Shown as the blue link in Google." },
       {
@@ -351,6 +357,7 @@ export type SiteContent = Record<string, Record<string, unknown>>;
 
 export const defaultContent: SiteContent = {
   seo: {
+    siteUrl: "http://localhost:3000",
     siteName: "Studio",
     title: "Studio — Marketing & Video Editing That People Finish Watching",
     description:
