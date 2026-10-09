@@ -22,9 +22,14 @@ create policy "media delete"
   on storage.objects for delete
   using (bucket_id = 'media');
 
--- Tidy up the upload probe left behind while testing the upload path.
-delete from storage.objects
-where bucket_id = 'media' and name like 'upload-check-%';
+-- NOTE: do not try to clean the bucket with `delete from storage.objects`.
+-- Supabase blocks it with a protect_delete() trigger, because deleting the
+-- row leaves the actual file orphaned in the backing store:
+--   ERROR 42501: Direct deletion from storage tables is not allowed.
+-- Remove files through the Storage API or the dashboard instead. Once the
+-- policy above exists, this works:
+--
+--   curl -X DELETE --     'https://ewnqpitxxtyjzjuzniah.supabase.co/storage/v1/object/media/<file>' --     -H "apikey: <anon key>" -H "Authorization: Bearer <anon key>"
 
 -- =====================================================================
 --  HARDENING — swap to these before going live, alongside the policies at
