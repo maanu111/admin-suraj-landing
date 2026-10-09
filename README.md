@@ -70,3 +70,4 @@ source — it stops casual visitors, nothing more.
 
 Before deploying anywhere public, apply the hardened policies at the bottom of
 `supabase/schema.sql` and sign the admin in through Supabase Auth.
+# admin-suraj-landing
