@@ -13,7 +13,6 @@ export type Field =
   | { key: string; label: string; type: "textarea"; help?: string }
   | { key: string; label: string; type: "url"; help?: string }
   | { key: string; label: string; type: "image"; help?: string }
-  | { key: string; label: string; type: "video"; help?: string }
   | { key: string; label: string; type: "list"; singular: string; fields: Field[] };
 
 export type SectionDef = {
@@ -75,7 +74,6 @@ export const SECTIONS: SectionDef[] = [
           { key: "title", label: "Title", type: "text" },
           { key: "category", label: "Category", type: "text", help: "Shown after the title, e.g. LUXURY AUTO" },
           { key: "image", label: "Thumbnail", type: "image" },
-          { key: "video", label: "Video", type: "video", help: "Optional. Plays in a lightbox when clicked." },
           { key: "alt", label: "Alt text", type: "text" },
         ],
       },
@@ -149,7 +147,6 @@ export const SECTIONS: SectionDef[] = [
           { key: "metric", label: "Metric", type: "text", help: "Counts up — e.g. 4.1×, +218%, 9.2M" },
           { key: "metricLabel", label: "Metric label", type: "text" },
           { key: "image", label: "Poster image", type: "image" },
-          { key: "video", label: "Video", type: "video", help: "Leave empty to show the image only" },
           { key: "alt", label: "Alt text", type: "text" },
           { key: "href", label: "Case study link", type: "url", help: "Optional" },
         ],
@@ -487,12 +484,12 @@ export const defaultContent: SiteContent = {
     secondaryLabel: "Latest work",
     secondaryHref: "/#work",
     tiles: [
-      { title: "Global brand campaign", category: "Luxury auto", image: "/ad-reel-hero.png", video: "", alt: "Red-lit fragrance bottle wrapped in smoke" },
-      { title: "Crafting the unseen", category: "Documentary", image: "/campaign-fashion.png", video: "", alt: "Model in a cobalt coat in a sunlit colonnade" },
-      { title: "Urban beat", category: "Music video", image: "/campaign-beverage.png", video: "", alt: "Citrus soda poured over ice" },
-      { title: "Story of creation", category: "Fashion", image: "/campaign-fashion.png", video: "", alt: "Model in a cobalt coat in a sunlit colonnade" },
-      { title: "Urban of beat", category: "Video", image: "/campaign-beverage.png", video: "", alt: "Citrus soda poured over ice" },
-      { title: "Tech innovation", category: "Corporate", image: "/ad-reel-hero.png", video: "", alt: "Red-lit fragrance bottle wrapped in smoke" },
+      { title: "Global brand campaign", category: "Luxury auto", image: "/ad-reel-hero.png", alt: "Red-lit fragrance bottle wrapped in smoke" },
+      { title: "Crafting the unseen", category: "Documentary", image: "/campaign-fashion.png", alt: "Model in a cobalt coat in a sunlit colonnade" },
+      { title: "Urban beat", category: "Music video", image: "/campaign-beverage.png", alt: "Citrus soda poured over ice" },
+      { title: "Story of creation", category: "Fashion", image: "/campaign-fashion.png", alt: "Model in a cobalt coat in a sunlit colonnade" },
+      { title: "Urban of beat", category: "Video", image: "/campaign-beverage.png", alt: "Citrus soda poured over ice" },
+      { title: "Tech innovation", category: "Corporate", image: "/ad-reel-hero.png", alt: "Red-lit fragrance bottle wrapped in smoke" },
     ],
     recentHeading: "Recent projects",
     recentLabel: "View all work",
@@ -560,7 +557,6 @@ export const defaultContent: SiteContent = {
         metric: "4.1×",
         metricLabel: "return on ad spend",
         image: "/ad-reel-hero.png",
-        video: "",
         alt: "Red-lit fragrance bottle wrapped in smoke on a wet reflective surface",
         href: "",
       },
@@ -573,7 +569,6 @@ export const defaultContent: SiteContent = {
         metric: "+218%",
         metricLabel: "qualified traffic",
         image: "/campaign-fashion.png",
-        video: "",
         alt: "Model in a cobalt wool coat walking through a sunlit concrete colonnade",
         href: "",
       },
@@ -586,7 +581,6 @@ export const defaultContent: SiteContent = {
         metric: "9.2M",
         metricLabel: "organic views",
         image: "/campaign-beverage.png",
-        video: "",
         alt: "Citrus soda poured over ice with orange and lime slices and flying droplets",
         href: "",
       },

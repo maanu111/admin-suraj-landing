@@ -15,7 +15,7 @@ function MediaInput({
   value,
   onChange,
 }: {
-  field: Extract<Field, { type: "image" | "video" }>;
+  field: Extract<Field, { type: "image" }>;
   value: string;
   onChange: (next: string) => void;
 }) {
@@ -41,13 +41,8 @@ function MediaInput({
     <div className="a-media">
       {value ? (
         <div className="a-preview">
-          {field.type === "video" ? (
-            // eslint-disable-next-line jsx-a11y/media-has-caption
-            <video src={value} muted loop playsInline autoPlay />
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={value} alt="" />
-          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={value} alt="" />
           <div className="a-preview-actions">
             <button type="button" className="a-btn a-btn-ghost" onClick={() => inputRef.current?.click()} disabled={busy}>
               {busy ? "Uploading…" : "Replace"}
@@ -77,7 +72,7 @@ function MediaInput({
           }}
           disabled={busy}
         >
-          <strong>{busy ? "Uploading…" : `Choose ${field.type === "video" ? "a video" : "an image"}`}</strong>
+          <strong>{busy ? "Uploading…" : "Choose an image"}</strong>
           <span>or drag it here</span>
         </button>
       )}
@@ -85,7 +80,7 @@ function MediaInput({
       <input
         ref={inputRef}
         type="file"
-        accept={field.type === "video" ? "video/*" : "image/*"}
+        accept="image/*"
         onChange={(e) => void send(e.target.files?.[0])}
         hidden
       />
@@ -213,7 +208,7 @@ export default function FieldInput({
         {field.label}
       </label>
 
-      {field.type === "image" || field.type === "video" ? (
+      {field.type === "image" ? (
         <MediaInput field={field} value={text} onChange={onChange} />
       ) : field.type === "textarea" ? (
         <textarea id={`f-${field.key}`} className="a-input" rows={3} value={text} onChange={(e) => onChange(e.target.value)} />
