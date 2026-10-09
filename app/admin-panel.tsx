@@ -25,11 +25,16 @@ export default function AdminPanel() {
   const [dirty, setDirty] = useState<Record<string, boolean>>({});
   const [live, setLive] = useState<Live>("connecting");
   const [remote, setRemote] = useState<string[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // Held in a ref so the realtime handler always sees the current dirty state
-  // without having to re-subscribe on every keystroke.
+  const mainRef = useRef<HTMLElement>(null);
+
+  // Held in refs so the realtime handler and the save shortcut always see
+  // current state without re-subscribing or re-binding on every keystroke.
   const dirtyRef = useRef(dirty);
   dirtyRef.current = dirty;
+  const activeRef = useRef(active);
+  activeRef.current = active;
 
   useEffect(() => {
     setUnlocked(sessionStorage.getItem(GATE_KEY) === "1");
@@ -72,8 +77,8 @@ export default function AdminPanel() {
     if (unlocked) void load();
   }, [unlocked, load]);
 
-  // Realtime: pick up edits made from another browser or device. A section the
-  // editor is currently working on is never overwritten — it is flagged instead.
+  // Realtime: pick up edits from another browser or device. A section being
+  // edited right now is never overwritten — it is flagged instead.
   useEffect(() => {
     if (!unlocked || !isSupabaseConfigured) return;
 
@@ -105,29 +110,66 @@ export default function AdminPanel() {
     setStatus("");
   }
 
-  async function save(sectionKey: string) {
-    if (!isSupabaseConfigured) return;
-    setSaving(true);
-    setError("");
-    const { error: err } = await supabase
-      .from("site_content")
-      .upsert({ section: sectionKey, content: content[sectionKey] }, { onConflict: "section" });
+  const save = useCallback(
+    async (sectionKey: string) => {
+      if (!isSupabaseConfigured) return;
+      setSaving(true);
+      setError("");
+      const { error: err } = await supabase
+        .from("site_content")
+        .upsert({ section: sectionKey, content: content[sectionKey] }, { onConflict: "section" });
 
-    if (err) {
-      setError(`Could not save: ${err.message}`);
-    } else {
-      setDirty((prev) => ({ ...prev, [sectionKey]: false }));
-      setRemote((prev) => prev.filter((s) => s !== sectionKey));
-      setStatus("Saved — the live site updates within a second.");
-    }
-    setSaving(false);
-  }
+      if (err) {
+        setError(`Could not save: ${err.message}`);
+      } else {
+        setDirty((prev) => ({ ...prev, [sectionKey]: false }));
+        setRemote((prev) => prev.filter((s) => s !== sectionKey));
+        setStatus("Saved — the live site updates within a second.");
+      }
+      setSaving(false);
+    },
+    [content],
+  );
 
   async function saveAll() {
     const pending = Object.keys(dirty).filter((key) => dirty[key]);
     for (const key of pending) await save(key);
     if (pending.length) setStatus(`Saved ${pending.length} section${pending.length > 1 ? "s" : ""}.`);
   }
+
+  /** Switching section always lands at the top of the new form. */
+  function selectSection(key: string) {
+    setActive(key);
+    setMenuOpen(false);
+    setStatus("");
+    requestAnimationFrame(() => {
+      mainRef.current?.scrollTo({ top: 0, behavior: "auto" });
+      window.scrollTo({ top: 0, behavior: "auto" });
+    });
+  }
+
+  // Cmd/Ctrl+S saves the open section.
+  useEffect(() => {
+    if (!unlocked) return;
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        void save(activeRef.current);
+      }
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [unlocked, save]);
+
+  // Warn before losing unsaved edits.
+  useEffect(() => {
+    const anyDirty = Object.values(dirty).some(Boolean);
+    if (!anyDirty) return;
+    const onBeforeUnload = (event: BeforeUnloadEvent) => event.preventDefault();
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [dirty]);
 
   /* ---------------------------------------------------------------- */
 
@@ -176,8 +218,10 @@ export default function AdminPanel() {
   const dirtyCount = Object.values(dirty).filter(Boolean).length;
 
   return (
-    <div className="a-shell">
-      <aside className="a-side">
+    <div className="a-shell" data-menu={menuOpen || undefined}>
+      {menuOpen ? <button type="button" className="a-scrim" aria-label="Close menu" onClick={() => setMenuOpen(false)} /> : null}
+
+      <aside className="a-side" data-open={menuOpen || undefined}>
         <div className="a-brand">
           <span className="a-dot" aria-hidden="true" />
           <div>
@@ -198,7 +242,7 @@ export default function AdminPanel() {
               type="button"
               className="a-nav-item"
               aria-current={item.key === active ? "page" : undefined}
-              onClick={() => setActive(item.key)}
+              onClick={() => selectSection(item.key)}
             >
               {item.title}
               {dirty[item.key] ? <i className="a-badge" title="Unsaved changes" /> : null}
@@ -218,11 +262,22 @@ export default function AdminPanel() {
         </div>
       </aside>
 
-      <main className="a-main">
+      <main className="a-main" ref={mainRef}>
         <header className="a-head">
-          <div>
-            <h1>{section.title}</h1>
-            <p>{section.description}</p>
+          <div className="a-head-title">
+            <button
+              type="button"
+              className="a-burger"
+              aria-label="Open sections menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              <span aria-hidden="true" />
+            </button>
+            <div>
+              <h1>{section.title}</h1>
+              <p>{section.description}</p>
+            </div>
           </div>
           <div className="a-head-actions">
             <button type="button" className="a-btn a-btn-ghost" onClick={() => void load()} disabled={loading || saving}>
@@ -233,35 +288,38 @@ export default function AdminPanel() {
               className="a-btn a-btn-solid"
               onClick={() => void save(section.key)}
               disabled={saving || loading}
+              title="Ctrl/Cmd + S"
             >
-              {saving ? "Saving…" : "Save"}
+              {saving ? "Saving…" : dirty[section.key] ? "Save •" : "Save"}
             </button>
           </div>
         </header>
 
-        {error ? <p className="a-banner a-banner-error">{error}</p> : null}
-        {status ? <p className="a-banner a-banner-ok">{status}</p> : null}
-        {remote.includes(section.key) ? (
-          <p className="a-banner a-banner-warn">
-            Someone else changed this section while you were editing. Saving will overwrite theirs — or press Reload to
-            take their version and lose yours.
-          </p>
-        ) : null}
+        <div className="a-body">
+          {error ? <p className="a-banner a-banner-error">{error}</p> : null}
+          {status ? <p className="a-banner a-banner-ok">{status}</p> : null}
+          {remote.includes(section.key) ? (
+            <p className="a-banner a-banner-warn">
+              Someone else changed this section while you were editing. Saving will overwrite theirs — or press Reload
+              to take their version and lose yours.
+            </p>
+          ) : null}
 
-        {loading ? (
-          <p className="a-hint">Loading content…</p>
-        ) : (
-          <div className="a-card">
-            {section.fields.map((field) => (
-              <FieldInput
-                key={field.key}
-                field={field}
-                value={content[section.key]?.[field.key]}
-                onChange={(next) => setField(section.key, field.key, next)}
-              />
-            ))}
-          </div>
-        )}
+          {loading ? (
+            <p className="a-hint">Loading content…</p>
+          ) : (
+            <div className="a-card">
+              {section.fields.map((field) => (
+                <FieldInput
+                  key={field.key}
+                  field={field}
+                  value={content[section.key]?.[field.key]}
+                  onChange={(next) => setField(section.key, field.key, next)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
