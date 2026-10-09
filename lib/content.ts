@@ -218,6 +218,13 @@ export const SECTIONS: SectionDef[] = [
           { key: "label", label: "Step label", type: "text" },
           { key: "title", label: "Title", type: "text" },
           { key: "copy", label: "Description", type: "textarea" },
+          {
+            key: "image",
+            label: "Photo",
+            type: "image",
+            help: "Optional. Bleeds to the top edge of the card. Leave empty for a plain white card.",
+          },
+          { key: "alt", label: "Photo alt text", type: "text" },
         ],
       },
     ],
