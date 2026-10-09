@@ -108,6 +108,9 @@ function ListInput({
   onChange: (next: Row[]) => void;
 }) {
   const rows = Array.isArray(value) ? value : [];
+  // Delete used to fire on the first click, destroying a whole block with no
+  // undo. It now arms on the first click and disarms itself after 3s.
+  const [confirming, setConfirming] = useState<number | null>(null);
 
   const update = (index: number, key: string, next: unknown) =>
     onChange(rows.map((row, i) => (i === index ? { ...row, [key]: next } : row)));
@@ -143,10 +146,21 @@ function ListInput({
               <button
                 type="button"
                 className="a-del"
-                onClick={() => onChange(rows.filter((_, i) => i !== index))}
-                aria-label={`Delete ${field.singular}`}
+                data-armed={confirming === index || undefined}
+                onClick={() => {
+                  if (confirming === index) {
+                    onChange(rows.filter((_, i) => i !== index));
+                    setConfirming(null);
+                  } else {
+                    setConfirming(index);
+                    setTimeout(() => setConfirming((current) => (current === index ? null : current)), 3000);
+                  }
+                }}
+                aria-label={
+                  confirming === index ? `Confirm delete ${field.singular}` : `Delete ${field.singular}`
+                }
               >
-                Delete
+                {confirming === index ? "Confirm?" : "Delete"}
               </button>
             </div>
           </div>

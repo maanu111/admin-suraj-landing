@@ -351,3 +351,15 @@
   cursor: pointer;
   text-decoration: underline;
 }
+
+/* Armed delete — second click within 3s actually removes the block. */
+.a-item-actions .a-del[data-armed] {
+  border-color: #b4330a;
+  background: #b4330a;
+  color: #fff;
+}
+
+/* "View site" shows which host it points at, so a stray localhost in
+   production is visible at a glance. */
+.a-view { display: grid; gap: 2px; }
+.a-view em { font-size: 10px; font-style: normal; color: var(--subtle); }

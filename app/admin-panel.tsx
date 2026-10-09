@@ -5,7 +5,16 @@ import { SECTIONS, defaultContent, type SiteContent } from "@/lib/content";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import FieldInput from "./field-input";
 
+// Where "View site" points. Set NEXT_PUBLIC_SITE_URL to the live domain
+// before deploying — otherwise the admin links editors back to localhost.
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const SITE_HOST = (() => {
+  try {
+    return new URL(SITE_URL).host;
+  } catch {
+    return SITE_URL;
+  }
+})();
 
 type Live = "connecting" | "live" | "off";
 
@@ -210,8 +219,9 @@ export default function AdminPanel() {
               Save all ({dirtyCount})
             </button>
           ) : null}
-          <a className="a-view" href={SITE_URL} target="_blank" rel="noopener noreferrer">
+          <a className="a-view" href={SITE_URL} target="_blank" rel="noopener noreferrer" title={SITE_URL}>
             View site ↗
+            <em>{SITE_HOST}</em>
           </a>
         </div>
       </aside>
