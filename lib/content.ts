@@ -161,6 +161,13 @@ export const SECTIONS: SectionDef[] = [
           { key: "title", label: "Title", type: "text" },
           { key: "copy", label: "Description", type: "textarea" },
           { key: "tags", label: "Tags", type: "text", help: "Comma separated" },
+          {
+            key: "image",
+            label: "Photo",
+            type: "image",
+            help: "Optional. Sits at the top of the tile. Leave empty for a flat colour tile.",
+          },
+          { key: "alt", label: "Photo alt text", type: "text", help: "Describes the photo for screen readers" },
         ],
       },
     ],
