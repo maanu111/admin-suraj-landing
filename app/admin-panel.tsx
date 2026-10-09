@@ -119,10 +119,12 @@ export default function AdminPanel() {
     [content],
   );
 
+  /** One button for everything outstanding — there is no per-section save. */
   async function saveAll() {
     const pending = Object.keys(dirty).filter((key) => dirty[key]);
+    if (!pending.length) return;
     for (const key of pending) await save(key);
-    if (pending.length) setStatus(`Saved ${pending.length} section${pending.length > 1 ? "s" : ""}.`);
+    setStatus(`Saved ${pending.length} section${pending.length > 1 ? "s" : ""}. The live site updates within a second.`);
   }
 
   /**
@@ -147,7 +149,7 @@ export default function AdminPanel() {
     const onKey = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
         event.preventDefault();
-        void save(activeRef.current);
+        void saveAll();
       }
       if (event.key === "Escape") setMenuOpen(false);
     };
@@ -202,13 +204,6 @@ export default function AdminPanel() {
           ))}
         </nav>
 
-        <div className="a-side-foot">
-          {dirtyCount > 0 ? (
-            <button type="button" className="a-btn a-btn-solid a-wide" onClick={() => void saveAll()} disabled={saving}>
-              Save all ({dirtyCount})
-            </button>
-          ) : null}
-        </div>
       </aside>
 
       <main className="a-main" ref={mainRef}>
@@ -235,11 +230,11 @@ export default function AdminPanel() {
             <button
               type="button"
               className="a-btn a-btn-solid"
-              onClick={() => void save(section.key)}
-              disabled={saving || loading}
+              onClick={() => void saveAll()}
+              disabled={saving || loading || dirtyCount === 0}
               title="Ctrl/Cmd + S"
             >
-              {saving ? "Saving…" : dirty[section.key] ? "Save •" : "Save"}
+              {saving ? "Saving…" : dirtyCount > 1 ? `Save ${dirtyCount} sections` : dirtyCount === 1 ? "Save changes" : "Saved"}
             </button>
           </div>
         </header>
