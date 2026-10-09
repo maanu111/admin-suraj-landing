@@ -370,3 +370,45 @@
 .a-nav-item { line-height: 1.3; }
 .a-nav-item[aria-current="page"] { font-weight: 500; }
 .a-side-foot { margin-top: auto; }
+
+/* ------------------------------------------------- Upload-only media field */
+.a-drop {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 22px 16px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--r-input);
+  background: #fff;
+  color: var(--charcoal);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.a-drop:hover:not(:disabled) { border-color: var(--teal); background: rgba(1, 106, 113, 0.04); }
+.a-drop[data-dragging] { border-color: var(--teal); background: rgba(1, 106, 113, 0.09); }
+.a-drop:disabled { opacity: 0.6; cursor: wait; }
+.a-drop strong { font-size: 13px; font-weight: 500; }
+.a-drop span { font-size: 11px; color: var(--subtle); }
+.a-preview-actions { display: flex; align-items: center; gap: 12px; }
+
+/* Centred loading state, instead of a line of grey text at the top left. */
+.a-loading {
+  display: grid;
+  min-height: 46vh;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  color: var(--muted);
+}
+.a-loading p { margin: 0; font-size: 13px; }
+.a-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: a-spin 0.75s linear infinite;
+}
+@keyframes a-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .a-spinner { animation-duration: 3s; } }

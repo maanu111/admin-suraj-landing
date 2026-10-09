@@ -19,12 +19,12 @@ function MediaInput({
   value: string;
   onChange: (next: string) => void;
 }) {
-  const [mode, setMode] = useState<"url" | "upload">("url");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  async function onFile(file: File | undefined) {
+  async function send(file: File | undefined) {
     if (!file) return;
     setBusy(true);
     setError("");
@@ -39,40 +39,6 @@ function MediaInput({
 
   return (
     <div className="a-media">
-      <div className="a-seg" role="tablist" aria-label={`${field.label} source`}>
-        <button type="button" role="tab" aria-selected={mode === "url"} onClick={() => setMode("url")}>
-          Paste URL
-        </button>
-        <button type="button" role="tab" aria-selected={mode === "upload"} onClick={() => setMode("upload")}>
-          Upload file
-        </button>
-      </div>
-
-      {mode === "url" ? (
-        <input
-          className="a-input"
-          value={value}
-          placeholder={field.type === "video" ? "https://… .mp4 or a YouTube link" : "https://… or /local-file.png"}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      ) : (
-        <div className="a-upload">
-          <input
-            ref={inputRef}
-            type="file"
-            accept={field.type === "video" ? "video/*" : "image/*"}
-            onChange={(e) => onFile(e.target.files?.[0])}
-            hidden
-          />
-          <button type="button" className="a-btn a-btn-ghost" onClick={() => inputRef.current?.click()} disabled={busy}>
-            {busy ? "Uploading…" : "Choose a file"}
-          </button>
-          <span className="a-hint">Stored in the Supabase “media” bucket</span>
-        </div>
-      )}
-
-      {error ? <p className="a-error">{error}</p> : null}
-
       {value ? (
         <div className="a-preview">
           {field.type === "video" ? (
@@ -82,14 +48,49 @@ function MediaInput({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt="" />
           )}
-          <div>
-            <code>{value}</code>
+          <div className="a-preview-actions">
+            <button type="button" className="a-btn a-btn-ghost" onClick={() => inputRef.current?.click()} disabled={busy}>
+              {busy ? "Uploading…" : "Replace"}
+            </button>
             <button type="button" className="a-link" onClick={() => onChange("")}>
               Remove
             </button>
           </div>
         </div>
-      ) : null}
+      ) : (
+        /* Upload only — no URL box. Everything lives in Supabase storage, so
+           there is one place a file can come from and nothing to paste wrong. */
+        <button
+          type="button"
+          className="a-drop"
+          data-dragging={dragging || undefined}
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            void send(e.dataTransfer.files?.[0]);
+          }}
+          disabled={busy}
+        >
+          <strong>{busy ? "Uploading…" : `Choose ${field.type === "video" ? "a video" : "an image"}`}</strong>
+          <span>or drag it here</span>
+        </button>
+      )}
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept={field.type === "video" ? "video/*" : "image/*"}
+        onChange={(e) => void send(e.target.files?.[0])}
+        hidden
+      />
+
+      {error ? <p className="a-error">{error}</p> : null}
     </div>
   );
 }

@@ -5,6 +5,9 @@ import { SECTIONS, defaultContent, type SiteContent } from "@/lib/content";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import FieldInput from "./field-input";
 
+/** Remembers which section was open, so a refresh does not reset to the top. */
+const OPEN_SECTION_KEY = "studio-admin-section";
+
 type Live = "connecting" | "live" | "off";
 
 export default function AdminPanel() {
@@ -64,6 +67,12 @@ export default function AdminPanel() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  // Reopen whatever section was being edited before the refresh.
+  useEffect(() => {
+    const saved = localStorage.getItem(OPEN_SECTION_KEY);
+    if (saved && SECTIONS.some((item) => item.key === saved)) setActive(saved);
+  }, []);
 
   // Realtime: pick up edits from another browser or device. A section being
   // edited right now is never overwritten — it is flagged instead.
@@ -133,6 +142,11 @@ export default function AdminPanel() {
    * hidden or occluded tabs, so scheduling the reset there can skip it.
    */
   function selectSection(key: string) {
+    try {
+      localStorage.setItem(OPEN_SECTION_KEY, key);
+    } catch {
+      /* private mode — the section just will not persist */
+    }
     const toTop = () => {
       if (mainRef.current) mainRef.current.scrollTop = 0;
       window.scrollTo(0, 0);
@@ -250,7 +264,10 @@ export default function AdminPanel() {
           ) : null}
 
           {loading ? (
-            <p className="a-hint">Loading content…</p>
+            <div className="a-loading">
+              <span className="a-spinner" aria-hidden="true" />
+              <p>Loading content…</p>
+            </div>
           ) : (
             <div className="a-card">
               {section.fields.map((field) => (
