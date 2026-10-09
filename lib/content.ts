@@ -38,6 +38,40 @@ const linkFields: Field[] = [
 
 export const SECTIONS: SectionDef[] = [
   {
+    key: "seo",
+    title: "SEO & metadata",
+    description:
+      "Search and social metadata. Feeds the page title, meta description, Open Graph and Twitter cards, sitemap, robots.txt and the JSON-LD business listing.",
+    fields: [
+      { key: "siteName", label: "Site name", type: "text", help: "Brand name shown in search results and OG cards" },
+      { key: "title", label: "Page title", type: "text", help: "50–60 characters. Shown as the blue link in Google." },
+      {
+        key: "description",
+        label: "Meta description",
+        type: "textarea",
+        help: "150–160 characters. The grey snippet under the title.",
+      },
+      { key: "keywords", label: "Keywords", type: "text", help: "Comma separated. Minor ranking value; useful for your own records." },
+      { key: "ogImage", label: "Social share image", type: "image", help: "1200×630. Leave empty to auto-generate one." },
+      { key: "twitterHandle", label: "X / Twitter handle", type: "text", help: "Including the @" },
+      { key: "locale", label: "Locale", type: "text", help: "e.g. en_IN" },
+      { key: "noindex", label: "Hide from search engines", type: "text", help: 'Type "yes" to block indexing. Leave empty to stay indexed.' },
+
+      { key: "businessName", label: "Legal business name", type: "text" },
+      { key: "businessType", label: "Business category", type: "text", help: "e.g. Video production and marketing studio" },
+      { key: "phone", label: "Public phone", type: "text", help: "+91…" },
+      { key: "email", label: "Public email", type: "text" },
+      { key: "streetAddress", label: "Street address", type: "text" },
+      { key: "addressLocality", label: "City", type: "text" },
+      { key: "addressRegion", label: "State", type: "text" },
+      { key: "postalCode", label: "Postal code", type: "text" },
+      { key: "addressCountry", label: "Country code", type: "text", help: "Two letters, e.g. IN" },
+      { key: "areaServed", label: "Areas served", type: "text", help: "Comma separated" },
+      { key: "priceRange", label: "Price range", type: "text", help: "e.g. ₹₹ or ₹50,000+" },
+      { key: "foundingDate", label: "Founded", type: "text", help: "YYYY or YYYY-MM-DD" },
+    ],
+  },
+  {
     key: "brand",
     title: "Brand & navigation",
     description: "Wordmark, nav links, and the header call to action.",
@@ -316,6 +350,30 @@ export const SECTIONS: SectionDef[] = [
 export type SiteContent = Record<string, Record<string, unknown>>;
 
 export const defaultContent: SiteContent = {
+  seo: {
+    siteName: "Studio",
+    title: "Studio — Marketing & Video Editing That People Finish Watching",
+    description:
+      "An independent marketing and video editing studio. Paid social, brand films, product video, motion graphics, colour and sound — strategy and the edit under one roof.",
+    keywords:
+      "video editing studio, marketing agency, paid social ads, brand films, product video, motion graphics, colour grading, sound design, performance creative, India",
+    ogImage: "",
+    twitterHandle: "",
+    locale: "en_IN",
+    noindex: "",
+    businessName: "Studio",
+    businessType: "Video production and marketing studio",
+    phone: "",
+    email: "",
+    streetAddress: "",
+    addressLocality: "Mumbai",
+    addressRegion: "Maharashtra",
+    postalCode: "",
+    addressCountry: "IN",
+    areaServed: "India, Worldwide",
+    priceRange: "₹₹",
+    foundingDate: "",
+  },
   brand: {
     wordmark: "Studio",
     tagline: "Marketing × Motion",
