@@ -439,8 +439,8 @@ export type SiteContent = Record<string, Record<string, unknown>>;
 export const defaultContent: SiteContent = {
   seo: {
     canonicalDomain: "",
-    siteName: "Studio",
-    title: "Studio — Marketing & Video Editing That People Finish Watching",
+    siteName: "CameraCraft",
+    title: "CameraCraft — Marketing & Video Editing That People Finish Watching",
     description:
       "An independent marketing and video editing studio. Paid social, brand films, product video, motion graphics, colour and sound — strategy and the edit under one roof.",
     keywords:
@@ -450,7 +450,7 @@ export const defaultContent: SiteContent = {
     locale: "en_IN",
     noindex: "",
     googleVerification: "",
-    businessName: "Studio",
+    businessName: "CameraCraft",
     businessType: "Video production and marketing studio",
     phone: "",
     email: "",
@@ -464,7 +464,7 @@ export const defaultContent: SiteContent = {
     foundingDate: "",
   },
   brand: {
-    wordmark: "Studio",
+    wordmark: "CameraCraft",
     tagline: "Marketing × Motion",
     navLinks: [
       { label: "Services", href: "/#services" },
@@ -810,7 +810,7 @@ export const defaultContent: SiteContent = {
         ],
       },
       {
-        title: "Studio",
+        title: "CameraCraft",
         links: [
           { label: "Work", href: "/#work" },
       { label: "About", href: "/about" },
@@ -839,8 +839,8 @@ export const defaultContent: SiteContent = {
     ctaLabel: "Start a project",
     ctaHref: "#contact",
     statusText: "Taking on work for Q1",
-    bigMark: "STUDIO",
-    legal: "© 2026 Studio",
+    bigMark: "CAMERACRAFT",
+    legal: "© 2026 CameraCraft",
     note: "Campaign frames are concept visuals",
   },
 };
