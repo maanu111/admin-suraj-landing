@@ -53,7 +53,7 @@ export const SECTIONS: SectionDef[] = [
     key: "hero",
     title: "Hero",
     description:
-      "The dark opening screen — background film still, headline, buttons, the video mosaic and the Recent projects bar.",
+      "The dark opening screen — background film still, headline, buttons, the image mosaic and the Recent projects bar.",
     fields: [
       { key: "bgImage", label: "Background still", type: "image", help: "Darkened behind the headline. Landscape works best." },
       { key: "bgAlt", label: "Background alt text", type: "text" },
@@ -67,7 +67,7 @@ export const SECTIONS: SectionDef[] = [
       { key: "secondaryHref", label: "Outline button link", type: "url" },
       {
         key: "tiles",
-        label: "Video mosaic",
+        label: "Image mosaic",
         type: "list",
         singular: "tile",
         fields: [
