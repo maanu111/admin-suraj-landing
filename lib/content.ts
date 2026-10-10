@@ -407,6 +407,12 @@ export const SECTIONS: SectionDef[] = [
       { key: "twitterHandle", label: "X / Twitter handle", type: "text", help: "Including the @" },
       { key: "locale", label: "Locale", type: "text", help: "e.g. en_IN" },
       { key: "noindex", label: "Hide from search engines", type: "text", help: 'Type "yes" to block indexing. Leave empty to stay indexed.' },
+      {
+        key: "googleVerification",
+        label: "Google Search Console code",
+        type: "text",
+        help: 'Only for the "HTML tag" method on a URL-prefix property. Paste the code Google gives you, save, then click Verify. A Domain property uses a DNS record instead and ignores this.',
+      },
 
       { key: "businessName", label: "Legal business name", type: "text" },
       { key: "businessType", label: "Business category", type: "text", help: "e.g. Video production and marketing studio" },
@@ -443,6 +449,7 @@ export const defaultContent: SiteContent = {
     twitterHandle: "",
     locale: "en_IN",
     noindex: "",
+    googleVerification: "",
     businessName: "Studio",
     businessType: "Video production and marketing studio",
     phone: "",
