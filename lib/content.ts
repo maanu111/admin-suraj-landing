@@ -798,7 +798,7 @@ export const defaultContent: SiteContent = {
     secondaryHref: "#work",
   },
   footer: {
-    about: "An independent marketing and video editing studio. Working studio identity — replace with your brand.",
+    about: "An independent marketing and video editing studio. Strategy, the shoot and the edit under one roof.",
     columns: [
       {
         title: "Services",

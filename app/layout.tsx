@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ variable: "--font-sans", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Studio — Content admin",
-  description: "Edit every section of the Studio landing page.",
+  title: "CameraCraft — Content admin",
+  description: "Edit every section of the CameraCraft landing page.",
   robots: { index: false, follow: false },
 };
 

@@ -193,7 +193,7 @@ export default function AdminPanel() {
         <div className="a-brand">
           <span className="a-dot" aria-hidden="true" />
           <div>
-            <strong>Studio</strong>
+            <strong>CameraCraft</strong>
             <span>Content admin</span>
           </div>
         </div>
