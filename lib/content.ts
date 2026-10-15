@@ -43,6 +43,7 @@ export const SECTIONS: SectionDef[] = [
     fields: [
       { key: "wordmark", label: "Wordmark", type: "text" },
       { key: "tagline", label: "Tagline", type: "text" },
+      { key: "logo", label: "Logo", type: "image", help: "Shown beside the wordmark in the header and footer. A square, transparent PNG works best." },
       { key: "navLinks", label: "Navigation links", type: "list", singular: "link", fields: linkFields },
       { key: "ctaLabel", label: "Header button label", type: "text" },
       { key: "ctaHref", label: "Header button link", type: "url" },
@@ -199,28 +200,6 @@ export const SECTIONS: SectionDef[] = [
     ],
   },
   {
-    key: "reviews",
-    title: "Reviews",
-    description: "Client quotes on the dark panel. Avatar tints cycle automatically.",
-    fields: [
-      { key: "eyebrow", label: "Eyebrow", type: "text" },
-      { key: "heading", label: "Heading", type: "text" },
-      { key: "note", label: "Side note", type: "textarea" },
-      {
-        key: "items",
-        label: "Reviews",
-        type: "list",
-        singular: "review",
-        fields: [
-          { key: "quote", label: "Quote", type: "textarea" },
-          { key: "name", label: "Name", type: "text" },
-          { key: "role", label: "Role and location", type: "text" },
-          { key: "avatar", label: "Avatar image", type: "image", help: "Optional — falls back to the initial" },
-        ],
-      },
-    ],
-  },
-  {
     key: "blogs",
     title: "Blogs",
     description: "Journal cards. Tile colours cycle automatically.",
@@ -242,6 +221,28 @@ export const SECTIONS: SectionDef[] = [
           { key: "copy", label: "Excerpt", type: "textarea" },
           { key: "image", label: "Cover image", type: "image", help: "Optional — replaces the pastel tile" },
           { key: "href", label: "Article link", type: "url" },
+        ],
+      },
+    ],
+  },
+  {
+    key: "reviews",
+    title: "Reviews",
+    description: "Client quotes on the dark panel. Avatar tints cycle automatically.",
+    fields: [
+      { key: "eyebrow", label: "Eyebrow", type: "text" },
+      { key: "heading", label: "Heading", type: "text" },
+      { key: "note", label: "Side note", type: "textarea" },
+      {
+        key: "items",
+        label: "Reviews",
+        type: "list",
+        singular: "review",
+        fields: [
+          { key: "quote", label: "Quote", type: "textarea" },
+          { key: "name", label: "Name", type: "text" },
+          { key: "role", label: "Role and location", type: "text" },
+          { key: "avatar", label: "Avatar image", type: "image", help: "Optional — falls back to the initial" },
         ],
       },
     ],
@@ -466,14 +467,15 @@ export const defaultContent: SiteContent = {
   brand: {
     wordmark: "CameraCraft",
     tagline: "Marketing × Motion",
+    logo: "/brand-logo.png",
     navLinks: [
       { label: "Services", href: "/#services" },
       { label: "Work", href: "/#work" },
       { label: "About", href: "/about" },
       { label: "Team", href: "/team" },
       { label: "Process", href: "/#process" },
-      { label: "Reviews", href: "/#reviews" },
       { label: "Blogs", href: "/#blogs" },
+      { label: "Reviews", href: "/#reviews" },
     ],
     ctaLabel: "Start a project",
     ctaHref: "#contact",
